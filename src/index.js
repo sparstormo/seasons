@@ -1,25 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { compileFunction } from 'vm';
+import SeasonDisplay from './SeasonDisplay';
 
 class App extends React.Component {
-    constructor(props) {
-        super(props);
-        // the only time we do direct assingment to this.state is in the
-        // contructor function. Otherwise we use this.setState.
-        this.state = { lat: null, errorMessage: '' };
 
+    state = { lat: null, errorMessage: '' };
+
+    componentDidMount() {
         window.navigator.geolocation.getCurrentPosition(
-            position => {
-                // We called setState to update the state component!
-                // Not this.state!
-                this.setState({ lat: position.coords.latitude });
-            },
-            err => {
-                this.setState({ errorMessage: err.message })
-            }
+            position => this.setState({ lat: position.coords.latitude }),
+            err => this.setState({ errorMessage: err.message })
         );
-
     }
+    componentDidUpdate() {
+        console.log('My component was just updated and rerendered.');
+    }
+
+
 
     //React says we have to define render!
     render() {
@@ -27,7 +25,7 @@ class App extends React.Component {
             return <div>Error: {this.state.errorMessage}</div>;
         }
         if (!this.state.errorMessage && this.state.lat) {
-            return <div>Latitude: {this.state.lat}</div>;
+            return <SeasonDisplay lat={this.state.lat} />;
         }
         return <div>Loading...</div>;
 
